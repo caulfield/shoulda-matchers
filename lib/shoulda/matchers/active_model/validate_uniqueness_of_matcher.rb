@@ -138,20 +138,21 @@ module Shoulda # :nodoc:
         end
 
         def create_record_in_database(options = {})
-          value =
-            case
-            when options[:nil_value] then nil
-            when options[:blank_value] then ''
-            else 'a'
-            end
-
           @subject.class.new.tap do |instance|
-            instance.__send__("#{@attribute}=", value)
+            instance.__send__("#{@attribute}=", value_for_new_record(options))
             if has_secure_password?
               instance.password = 'password'
               instance.password_confirmation = 'password'
             end
             instance.save(validate: false)
+          end
+        end
+
+        def value_for_new_record(options = {})
+          case
+          when options[:nil_value] then nil
+          when options[:blank_value] then ''
+          else 'a'
           end
         end
 
