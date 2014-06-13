@@ -7,10 +7,6 @@
   from `validate_uniqueness_of`, your best bet continues to be creating a record
   manually and calling `validate_uniqueness_of` on that instead.
 
-# 2.6.2
-
-### Features
-
 * Add support for `validate_uniqueness_of(:foo).allow_blank` to complement
   [`validates_uniqueness_of :foo, allow_blank:
 true`](http://api.rubyonrails.org/classes/ActiveRecord/Validations/ClassMethods.html#method-i-validates_uniqueness_of).
