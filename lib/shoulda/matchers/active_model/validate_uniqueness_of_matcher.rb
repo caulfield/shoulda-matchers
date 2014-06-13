@@ -19,6 +19,10 @@ module Shoulda # :nodoc:
       # * <tt>scoped_to</tt> - field(s) to scope the uniqueness to.
       # * <tt>case_insensitive</tt> - ensures that the validation does not
       #   check case. Off by default. Ignored by non-text attributes.
+      # * <tt>allow_nil</tt> - ensures that the validation allows multiple nil
+      #   values
+      # * <tt>allow_blank</tt> - ensures that the validation allows multiple
+      #   blank values
       #
       # Examples:
       #   it { should validate_uniqueness_of(:keyword) }
@@ -27,6 +31,8 @@ module Shoulda # :nodoc:
       #   it { should validate_uniqueness_of(:email).
       #                 scoped_to(:first_name, :last_name) }
       #   it { should validate_uniqueness_of(:keyword).case_insensitive }
+      #   it { should validate_uniqueness_of(:keyword).allow_nil }
+      #   it { should validate_uniqueness_of(:keyword).allow_blank }
       #
       def validate_uniqueness_of(attr)
         ValidateUniquenessOfMatcher.new(attr)
@@ -60,6 +66,11 @@ module Shoulda # :nodoc:
           self
         end
 
+        def allow_blank
+          @options[:allow_blank] = true
+          self
+        end
+
         def description
           result = "require "
           result << "case sensitive " unless @options[:case_insensitive]
@@ -72,9 +83,10 @@ module Shoulda # :nodoc:
           @subject = subject.class.new
           @expected_message ||= :taken
           set_scoped_attributes &&
-            validate_everything_except_duplicate_nils? &&
+            validate_everything_except_duplicate_nils_or_blanks? &&
             validate_after_scope_change? &&
-            allows_nil?
+            allows_nil? &&
+            allows_blank?
         end
 
         private
@@ -83,6 +95,15 @@ module Shoulda # :nodoc:
           if @options[:allow_nil]
             ensure_nil_record_in_database
             allows_value_of(nil, @expected_message)
+          else
+            true
+          end
+        end
+
+        def allows_blank?
+          if @options[:allow_blank]
+            ensure_blank_record_in_database
+            allows_value_of('', @expected_message)
           else
             true
           end
@@ -102,16 +123,27 @@ module Shoulda # :nodoc:
           end
         end
 
+        def ensure_blank_record_in_database
+          unless existing_record_is_blank?
+            create_record_in_database(blank_value: true)
+          end
+        end
+
         def existing_record_is_nil?
           @existing_record.present? && existing_value.nil?
         end
 
+        def existing_record_is_blank?
+          @existing_record.present? && existing_value.strip == ''
+        end
+
         def create_record_in_database(options = {})
-          if options[:nil_value]
-            value = nil
-          else
-            value = 'a'
-          end
+          value =
+            case
+            when options[:nil_value] then nil
+            when options[:blank_value] then ''
+            else 'a'
+            end
 
           @subject.class.new.tap do |instance|
             instance.__send__("#{@attribute}=", value)
@@ -144,15 +176,19 @@ module Shoulda # :nodoc:
           end
         end
 
-        def validate_everything_except_duplicate_nils?
+        def validate_everything_except_duplicate_nils_or_blanks?
           if @options[:allow_nil] && existing_value.nil?
-            create_record_without_nil
+            create_record_with_value
+          end
+
+          if @options[:allow_blank] && existing_value.blank?
+            create_record_with_value
           end
 
           disallows_value_of(existing_value, @expected_message)
         end
 
-        def create_record_without_nil
+        def create_record_with_value
           @existing_record = create_record_in_database
         end
 
