@@ -388,13 +388,13 @@ describe Shoulda::Matchers::ActiveModel::ValidateUniquenessOfMatcher do
       it "should allow_blank" do
         model = define_model_with_allow_blank
         Example.create!(attr: '')
-        expect(model).to matcher.allow_blank
+        expect(model.new).to matcher.allow_blank
       end
     end
 
     it "should create a blank and verify that it is allowed" do
       model = define_model_with_allow_blank
-      expect(model).to matcher.allow_blank
+      expect(model.new).to matcher.allow_blank
       Example.all.any?{ |instance| instance.attr.blank? }
     end
 
@@ -402,7 +402,7 @@ describe Shoulda::Matchers::ActiveModel::ValidateUniquenessOfMatcher do
       define_model(:example, attr: :string) do
         attr_accessible :attr
         validates_uniqueness_of :attr, allow_blank: true
-      end.new
+      end
     end
   end
 

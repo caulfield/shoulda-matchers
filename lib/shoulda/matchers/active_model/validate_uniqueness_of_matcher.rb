@@ -178,11 +178,8 @@ module Shoulda # :nodoc:
         end
 
         def validate_everything_except_duplicate_nils_or_blanks?
-          if @options[:allow_nil] && existing_value.nil?
-            create_record_with_value
-          end
-
-          if @options[:allow_blank] && existing_value.blank?
+          if (@options[:allow_nil] && existing_value.nil?) ||
+             (@options[:allow_blank] && existing_value.blank?)
             create_record_with_value
           end
 
