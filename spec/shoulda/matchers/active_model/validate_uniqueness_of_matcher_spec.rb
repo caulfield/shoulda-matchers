@@ -392,18 +392,6 @@ describe Shoulda::Matchers::ActiveModel::ValidateUniquenessOfMatcher do
       end
     end
 
-    if active_model_3_1?
-      context 'when the subject has a secure password' do
-        it 'allows blank on the attribute' do
-          model = define_model(:example, attr: :string, password_digest: :string) do |m|
-            validates_uniqueness_of :attr, allow_blank: true
-            has_secure_password
-          end.new
-          expect(model).to matcher.allow_blank
-        end
-      end
-    end
-
     it "should create a blank and verify that it is allowed" do
       model = define_model_with_allow_blank
       expect(model).to matcher.allow_blank
