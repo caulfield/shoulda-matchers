@@ -10,8 +10,7 @@ When 'I generate a new ActiveModel application' do
   if match = File.read(ENV['BUNDLE_GEMFILE']).match(/^gem "rails", "(.*)"/)
     append_to_gemfile %(gem 'activemodel', '#{ match[1] }')
   else
-    puts "Couldn't determine which ActiveModel version to load; using latest"
-    append_to_gemfile %(gem 'activemodel')
+    raise "Couldn't determine which ActiveModel version to load. BUNDLE_GEMFILE = #{ENV['BUNDLE_GEMFILE']}"
   end
 
   steps %{
