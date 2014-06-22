@@ -1,5 +1,11 @@
 # HEAD
 
+### Bug fixes
+
+* If you have a Rails >= 4.1 project and you are running tests using Spring,
+  matchers that depend on assertions within Rails' testing layer (e.g.
+  `render_template` and `route`) will no longer fail.
+
 * Revert change to `validate_uniqueness_of` made in 2.6.0 so that it no longer
   provides default values for non-primary, non-nullable columns. This approach
   was causing test failures because it makes the assumption that none of these
