@@ -2,6 +2,8 @@ ruby_version = Gem::Version.new(RUBY_VERSION + '')
 
 rails_3 = proc do
   gem 'strong_parameters'
+  gem 'spring'
+  gem 'spring-commands-rspec'
 end
 
 rails_3_1 = proc do
@@ -12,6 +14,8 @@ rails_3_1 = proc do
   gem 'sass-rails', '~> 3.1.5'
   gem 'coffee-rails', '~> 3.1.1'
   gem 'uglifier', '>= 1.0.3'
+  gem 'spring'
+  gem 'spring-commands-rspec'
 end
 
 rails_4 = proc do
